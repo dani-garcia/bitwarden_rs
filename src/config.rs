@@ -330,6 +330,8 @@ make_config! {
 
     /// General settings
     settings {
+       /// Periodic frequency of scheduled jobs. Default is set to every hour.
+       job_frequency_hour:      u32,   true,  def,    1;
         /// Domain URL |> This needs to be set to the URL used to access the server, including 'http[s]://'
         /// and port, if it's different than the default. Some server functions don't work correctly without this value
         domain:                 String, true,   def,    "http://localhost".to_string();
@@ -378,6 +380,8 @@ make_config! {
         org_creation_users:     String, true,   def,    "".to_string();
         /// Allow invitations |> Controls whether users can be invited by organization admins, even when signups are otherwise disabled
         invitations_allowed:    bool,   true,   def,    true;
+        /// Allow invitations |> Controls whether users can be invited to be emergency contact
+        emergency_access_allowed:    bool,   true,   def,    true;
         /// Password iterations |> Number of server-side passwords hashing iterations.
         /// The changes only apply when a user changes their password. Not recommended to lower the value
         password_iterations:    i32,    true,   def,    100_000;
@@ -844,10 +848,18 @@ where
     reg!("email/delete_account", ".html");
     reg!("email/invite_accepted", ".html");
     reg!("email/invite_confirmed", ".html");
+    reg!("email/emergency_access_invite_accepted", ".html");
+    reg!("email/emergency_access_invite_confirmed", ".html");
+    reg!("email/emergency_access_recovery_approved", ".html");
+    reg!("email/emergency_access_recovery_initiated", ".html");
+    reg!("email/emergency_access_recovery_rejected", ".html");
+    reg!("email/emergency_access_recovery_reminder", ".html");
+    reg!("email/emergency_access_recovery_timed_out", ".html");
     reg!("email/new_device_logged_in", ".html");
     reg!("email/pw_hint_none", ".html");
     reg!("email/pw_hint_some", ".html");
     reg!("email/send_org_invite", ".html");
+    reg!("email/send_emergency_access_invite", ".html");
     reg!("email/twofactor_email", ".html");
     reg!("email/verify_email", ".html");
     reg!("email/welcome", ".html");
