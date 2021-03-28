@@ -67,7 +67,7 @@ pub fn decode_invite(token: &str) -> Result<InviteJwtClaims, Error> {
     decode_jwt(token, JWT_INVITE_ISSUER.to_string())
 }
 
-pub fn decode_emergency_access_invite(token: &str) -> Result<EmergencyAccessInviteJWTClaims, Error> {
+pub fn decode_emergency_access_invite(token: &str) -> Result<EmergencyAccessInviteJwtClaims, Error> {
     decode_jwt(token, JWT_EMERGENCY_ACCESS_INVITE_ISSUER.to_string())
 }
 
@@ -153,7 +153,7 @@ pub fn generate_invite_claims(
 
 //           var token = _dataProtector.Protect($"EmergencyAccessInvite {emergencyAccess.Id} {emergencyAccess.Email} {nowMillis}");
 #[derive(Debug, Serialize, Deserialize)]
-pub struct EmergencyAccessInviteJWTClaims {
+pub struct EmergencyAccessInviteJwtClaims {
     // Not before
     pub nbf: i64,
     // Expiration time
@@ -175,9 +175,9 @@ pub fn generate_emergency_access_invite_claims(
     emer_id: Option<String>,
     grantor_name: Option<String>,
     grantor_email: Option<String>,
-) -> EmergencyAccessInviteJWTClaims {
+) -> EmergencyAccessInviteJwtClaims {
     let time_now = Utc::now().naive_utc();
-    EmergencyAccessInviteJWTClaims {
+    EmergencyAccessInviteJwtClaims {
         nbf: time_now.timestamp(),
         exp: (time_now + Duration::days(5)).timestamp(),
         iss: JWT_EMERGENCY_ACCESS_INVITE_ISSUER.to_string(),

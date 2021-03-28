@@ -17,8 +17,8 @@ pub fn init_jobs(scheduler: & mut Scheduler) {
 
     // Add some tasks to it
 
-    scheduler.every(CONFIG.job_frequency_hour().hour()).run(|| emergency_request_timed_out_job());
-    scheduler.every(CONFIG.job_frequency_hour().hour()).run(|| emergency_notification_reminder_job());
+    scheduler.every(CONFIG.job_frequency_hour().hour()).run(emergency_request_timed_out_job);
+    scheduler.every(CONFIG.job_frequency_hour().hour()).run(emergency_notification_reminder_job);
 }
 
 pub fn init_db_job()-> DbConn{
@@ -44,7 +44,7 @@ pub fn emergency_request_timed_out_job() {
 
     let emergency_accesses = EmergencyAccess::find_all_recoveries(&conn);
 
-    if emergency_accesses.len() == 0 {
+    if emergency_accesses.is_empty() {
         info!("No emergency request timeout to approve");
     }
 
@@ -91,7 +91,7 @@ pub fn emergency_notification_reminder_job(){
 
     let emergency_accesses = EmergencyAccess::find_all_recoveries(&conn);
 
-    if emergency_accesses.len() == 0 {
+    if emergency_accesses.is_empty() {
         info!("No emergency request reminder notification to send");
     }
 

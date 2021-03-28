@@ -238,7 +238,7 @@ fn send_invite(
         Some(user) => user,
     };
 
-    if EmergencyAccess::find_by_grantor_uuid_and_grantee_uuid_or_email(&grantor_user.uuid, &grantee_user.uuid.clone(), &grantee_user.email.clone(), &conn).is_some() {
+    if EmergencyAccess::find_by_grantor_uuid_and_grantee_uuid_or_email(&grantor_user.uuid, &grantee_user.uuid, &grantee_user.email, &conn).is_some() {
         err!(format!("Grantee user already invited: {}", email))
     }
 
@@ -248,11 +248,11 @@ fn send_invite(
 
     if CONFIG.mail_enabled() {
         mail::send_emergency_access_invite(
-            &grantee_user.email.clone(),
-            &grantee_user.uuid.clone(),
-            Some(new_emergency_access.uuid.clone()),
+            &grantee_user.email,
+            &grantee_user.uuid,
+            Some(new_emergency_access.uuid),
             Some(grantor_user.name.clone()),
-            Some(grantor_user.email.clone()),
+            Some(grantor_user.email),
         )?;
     }else {
         // Automatically mark user as accepted if no email invites
@@ -315,22 +315,22 @@ fn resend_invite(
     if CONFIG.mail_enabled() {
             mail::send_emergency_access_invite(
                 &email,
-                &grantor_user.uuid.clone(),
-                Some(emergency_access.uuid.clone()),
+                &grantor_user.uuid,
+                Some(emergency_access.uuid),
                 Some(grantor_user.name.clone()),
-                Some(grantor_user.email.clone()),
+                Some(grantor_user.email),
             )?;
 
     }else {
         if Invitation::find_by_mail(&email, &conn).is_none() {
-            let invitation = Invitation::new(email.clone());
+            let invitation = Invitation::new(email);
             invitation.save(&conn)?;
         }
 
         // Automatically mark user as accepted if no email invites
         match accept_invite_process(grantee_user.uuid,
                               emergency_access.uuid,
-                              emergency_access.email.clone(),
+                              emergency_access.email,
                               conn.borrow()){
             Ok(v) => (v),
             Err(e) => err!(e.to_string())
@@ -368,7 +368,7 @@ fn accept_invite(
        None => err!("Invited user not found")
    };
 
-    let emergency_access = match EmergencyAccess::find_by_uuid(&emer_id.clone(), &conn) {
+    let emergency_access = match EmergencyAccess::find_by_uuid(&emer_id, &conn) {
         Some (emer) => emer,
         None => err!("Emergency access not valid."),
     };
@@ -388,7 +388,7 @@ fn accept_invite(
     }
 
    match accept_invite_process(grantee_user.uuid.clone(),
-                          emer_id.clone(),
+                          emer_id,
                           Some(grantee_user.email.clone()),
                           &conn){
        Ok(v) => (v),
@@ -402,7 +402,7 @@ fn accept_invite(
 
             mail::send_emergency_access_invite_accepted(
                 &grantor_user.email,
-                &grantee_user.email.clone()
+                &grantee_user.email
             )?;
     }
 
@@ -462,11 +462,11 @@ fn confirm_emergency_access(
     };
 
     if emergency_access.status != EmergencyAccessStatus::Accepted as i32 ||
-        emergency_access.grantor_uuid != confirming_user.uuid.clone(){
+        emergency_access.grantor_uuid != confirming_user.uuid{
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&confirming_user.uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&confirming_user.uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -489,8 +489,8 @@ fn confirm_emergency_access(
             }
 
             mail::send_emergency_access_invite_confirmed(
-                &grantee_user.email.clone(),
-                &grantor_user.name.clone(),
+                &grantee_user.email,
+                &grantor_user.name,
             )?;
         }
         Ok(Json(emergency_access.to_json()))
@@ -525,7 +525,7 @@ fn initiate_emergency_access(
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&initiating_user.uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&initiating_user.uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -544,7 +544,7 @@ fn initiate_emergency_access(
 
         mail::send_emergency_access_recovery_initiated(
             &grantor_user.email,
-            &initiating_user.name.clone(),
+            &initiating_user.name,
             &emergency_access.get_atype_as_str(),
             &emergency_access.wait_time_days.clone().to_string(),
         )?;
@@ -569,11 +569,11 @@ fn approve_emergency_access(
     };
 
     if emergency_access.status != EmergencyAccessStatus::RecoveryInitiated as i32 ||
-        emergency_access.grantor_uuid != approving_user.uuid.clone(){
+        emergency_access.grantor_uuid != approving_user.uuid{
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&approving_user.uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&approving_user.uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -594,7 +594,7 @@ fn approve_emergency_access(
 
             mail::send_emergency_access_recovery_approved(
                 &grantee_user.email,
-                &grantor_user.name.clone(),
+                &grantor_user.name,
             )?;
         }
         Ok(Json(emergency_access.to_json()))
@@ -622,11 +622,11 @@ fn reject_emergency_access(
 
     if (emergency_access.status != EmergencyAccessStatus::RecoveryInitiated as i32 &&
         emergency_access.status != EmergencyAccessStatus::RecoveryApproved as i32) ||
-        emergency_access.grantor_uuid != rejecting_user.uuid.clone(){
+        emergency_access.grantor_uuid != rejecting_user.uuid{
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&rejecting_user.uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&rejecting_user.uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -648,7 +648,7 @@ fn reject_emergency_access(
 
             mail::send_emergency_access_recovery_rejected(
                 &grantee_user.email,
-                &grantor_user.name.clone(),
+                &grantor_user.name,
             )?;
         }
         Ok(Json(emergency_access.to_json()))
@@ -680,7 +680,7 @@ fn view_emergency_access(
     };
 
     if !is_valid_request(&emergency_access,
-                         requesting_user.uuid.clone(),
+                         requesting_user.uuid,
                          EmergencyAccessType::View) {
         err!("Emergency access not valid.")
     }
@@ -717,12 +717,12 @@ fn takeover_emergency_access(
 
 
     if !is_valid_request(&emergency_access,
-                         requesting_user.uuid.clone(),
+                         requesting_user.uuid,
                          EmergencyAccessType::Takeover) {
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -764,12 +764,12 @@ fn password_emergency_access(
     };
 
     if !is_valid_request(&emergency_access,
-                         requesting_user.uuid.clone(),
+                         requesting_user.uuid,
                          EmergencyAccessType::Takeover) {
         err!("Emergency access not valid.")
     }
 
-    let mut grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid.clone(), &conn) {
+    let mut grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -809,12 +809,12 @@ fn policies_emergency_access(
     };
 
     if !is_valid_request(&emergency_access,
-                         requesting_user.uuid.clone(),
+                         requesting_user.uuid,
                          EmergencyAccessType::Takeover) {
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid.clone(), &conn) {
+    let grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };
@@ -832,7 +832,7 @@ fn policies_emergency_access(
 fn is_valid_request(emergency_access: &EmergencyAccess,
                     requesting_user_uuid : String,
                     requested_access_type: EmergencyAccessType) -> bool {
-    return emergency_access.grantee_uuid == Some(requesting_user_uuid) &&
+    emergency_access.grantee_uuid == Some(requesting_user_uuid) &&
     emergency_access.status == EmergencyAccessStatus::RecoveryApproved as i32 &&
-    emergency_access.atype == requested_access_type as i32;
+    emergency_access.atype == requested_access_type as i32
 }
