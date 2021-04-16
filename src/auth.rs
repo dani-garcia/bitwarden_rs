@@ -21,7 +21,8 @@ pub static DEFAULT_VALIDITY: Lazy<Duration> = Lazy::new(|| Duration::hours(2));
 static JWT_HEADER: Lazy<Header> = Lazy::new(|| Header::new(JWT_ALGORITHM));
 pub static JWT_LOGIN_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|login", CONFIG.domain_origin()));
 static JWT_INVITE_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|invite", CONFIG.domain_origin()));
-static JWT_EMERGENCY_ACCESS_INVITE_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|emergencyaccessinvite", CONFIG.domain_origin()));
+static JWT_EMERGENCY_ACCESS_INVITE_ISSUER: Lazy<String> =
+    Lazy::new(|| format!("{}|emergencyaccessinvite", CONFIG.domain_origin()));
 static JWT_DELETE_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|delete", CONFIG.domain_origin()));
 static JWT_VERIFYEMAIL_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|verifyemail", CONFIG.domain_origin()));
 static JWT_ADMIN_ISSUER: Lazy<String> = Lazy::new(|| format!("{}|admin", CONFIG.domain_origin()));

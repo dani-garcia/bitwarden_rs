@@ -13,7 +13,10 @@ use lettre::{
 
 use crate::{
     api::EmptyResult,
-    auth::{encode_jwt, generate_delete_claims, generate_invite_claims, generate_emergency_access_invite_claims, generate_verify_email_claims},
+    auth::{
+        encode_jwt, generate_delete_claims, generate_emergency_access_invite_claims, generate_invite_claims,
+        generate_verify_email_claims,
+    },
     error::Error,
     CONFIG,
 };
@@ -243,7 +246,7 @@ pub fn send_emergency_access_invite(
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_invite_accepted( address: &str, grantee_email: &str) -> EmptyResult {
+pub fn send_emergency_access_invite_accepted(address: &str, grantee_email: &str) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_invite_accepted",
         json!({
@@ -255,7 +258,7 @@ pub fn send_emergency_access_invite_accepted( address: &str, grantee_email: &str
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_invite_confirmed( address: &str, grantor_name: &str) -> EmptyResult {
+pub fn send_emergency_access_invite_confirmed(address: &str, grantor_name: &str) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_invite_confirmed",
         json!({
@@ -267,7 +270,7 @@ pub fn send_emergency_access_invite_confirmed( address: &str, grantor_name: &str
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_recovery_approved( address: &str, grantor_name: &str) -> EmptyResult {
+pub fn send_emergency_access_recovery_approved(address: &str, grantor_name: &str) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_recovery_approved",
         json!({
@@ -279,7 +282,12 @@ pub fn send_emergency_access_recovery_approved( address: &str, grantor_name: &st
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_recovery_initiated( address: &str, grantee_name: &str, atype: &str, wait_time_days: &str) -> EmptyResult {
+pub fn send_emergency_access_recovery_initiated(
+    address: &str,
+    grantee_name: &str,
+    atype: &str,
+    wait_time_days: &str,
+) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_recovery_initiated",
         json!({
@@ -293,7 +301,12 @@ pub fn send_emergency_access_recovery_initiated( address: &str, grantee_name: &s
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_recovery_reminder( address: &str, grantee_name: &str, atype: &str, wait_time_days: &str) -> EmptyResult {
+pub fn send_emergency_access_recovery_reminder(
+    address: &str,
+    grantee_name: &str,
+    atype: &str,
+    wait_time_days: &str,
+) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_recovery_reminder",
         json!({
@@ -307,7 +320,7 @@ pub fn send_emergency_access_recovery_reminder( address: &str, grantee_name: &st
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_recovery_rejected( address: &str, grantor_name: &str) -> EmptyResult {
+pub fn send_emergency_access_recovery_rejected(address: &str, grantor_name: &str) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_recovery_rejected",
         json!({
@@ -319,7 +332,7 @@ pub fn send_emergency_access_recovery_rejected( address: &str, grantor_name: &st
     send_email(address, &subject, body_html, body_text)
 }
 
-pub fn send_emergency_access_recovery_timed_out( address: &str, grantee_name: &str, atype: &str) -> EmptyResult {
+pub fn send_emergency_access_recovery_timed_out(address: &str, grantee_name: &str, atype: &str) -> EmptyResult {
     let (subject, body_html, body_text) = get_text(
         "email/emergency_access_recovery_timed_out",
         json!({

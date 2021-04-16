@@ -26,7 +26,7 @@ db_object! {
 /// Local methods
 
 impl EmergencyAccess {
-    pub fn new(grantor_uuid: String, email: Option<String>, status:i32, atype: i32 , wait_time_days: i32) -> Self {
+    pub fn new(grantor_uuid: String, email: Option<String>, status: i32, atype: i32, wait_time_days: i32) -> Self {
         Self {
             uuid: crate::util::get_uuid(),
             grantor_uuid,
@@ -39,14 +39,14 @@ impl EmergencyAccess {
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc(),
             key_encrypted: None,
-            last_notification_at: None
+            last_notification_at: None,
         }
     }
 
     pub fn get_atype_as_str(&self) -> &'static str {
         if self.atype == EmergencyAccessType::View as i32 {
             "View"
-        }else{
+        } else {
             "Takeovver"
         }
     }
@@ -77,8 +77,8 @@ impl EmergencyAccess {
 
     pub fn to_json_grantee_details(&self, conn: &DbConn) -> Value {
         if self.grantee_uuid.is_some() {
-            let grantee_user = User::find_by_uuid(&self.grantee_uuid.clone().unwrap(), conn)
-                .expect("Grantee user not found.");
+            let grantee_user =
+                User::find_by_uuid(&self.grantee_uuid.clone().unwrap(), conn).expect("Grantee user not found.");
 
             json!({
                 "Id": self.uuid,
@@ -89,10 +89,8 @@ impl EmergencyAccess {
                 "Email": grantee_user.email,
                 "Name": grantee_user.name,
                 "Object": "emergencyAccessGranteeDetails",})
-
         } else if self.email.is_some() {
-            let grantee_user = User::find_by_mail(&self.email.clone().unwrap(), conn)
-                .expect("Grantee user not found.");
+            let grantee_user = User::find_by_mail(&self.email.clone().unwrap(), conn).expect("Grantee user not found.");
             json!({
                     "Id": self.uuid,
                     "Status": self.status,
@@ -116,8 +114,7 @@ impl EmergencyAccess {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[derive(num_derive::FromPrimitive)]
+#[derive(Copy, Clone, PartialEq, Eq, num_derive::FromPrimitive)]
 pub enum EmergencyAccessType {
     View = 0,
     Takeover = 1,
@@ -158,11 +155,10 @@ pub enum EmergencyAccessStatus {
 use crate::db::DbConn;
 
 use crate::api::EmptyResult;
-use crate::error::MapResult;
 use crate::db::models::User;
+use crate::error::MapResult;
 
 impl EmergencyAccess {
-
     pub fn save(&mut self, conn: &DbConn) -> EmptyResult {
         User::update_uuid_revision(&self.grantor_uuid, conn);
         self.updated_at = Utc::now().naive_utc();
@@ -217,7 +213,12 @@ impl EmergencyAccess {
         }}
     }
 
-    pub fn find_by_grantor_uuid_and_grantee_uuid_or_email(grantor_uuid: &str, grantee_uuid:&str, email:&str, conn: &DbConn) -> Option<Self> {
+    pub fn find_by_grantor_uuid_and_grantee_uuid_or_email(
+        grantor_uuid: &str,
+        grantee_uuid: &str,
+        email: &str,
+        conn: &DbConn,
+    ) -> Option<Self> {
         db_run! { conn: {
             emergency_accesses::table
                 .filter(emergency_accesses::grantor_uuid.eq(grantor_uuid))
@@ -236,7 +237,7 @@ impl EmergencyAccess {
         }}
     }
 
-    pub fn find_by_uuid_and_grantor_uuid(uuid: &str, grantor_uuid:&str, conn: &DbConn) -> Option<Self> {
+    pub fn find_by_uuid_and_grantor_uuid(uuid: &str, grantor_uuid: &str, conn: &DbConn) -> Option<Self> {
         db_run! { conn: {
             emergency_accesses::table
                 .filter(emergency_accesses::uuid.eq(uuid))

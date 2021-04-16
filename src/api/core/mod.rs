@@ -1,9 +1,9 @@
 mod accounts;
 mod ciphers;
+mod emergency_accesses;
 mod folders;
 mod organizations;
 mod sends;
-mod emergency_accesses;
 pub mod two_factor;
 
 pub use ciphers::purge_trashed_ciphers;

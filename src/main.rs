@@ -35,16 +35,16 @@ mod config;
 mod crypto;
 #[macro_use]
 mod db;
+mod jobs;
 mod mail;
 mod util;
-mod jobs;
 
 pub use config::CONFIG;
 pub use error::{Error, MapResult};
 pub use util::is_running_in_docker;
 
-use jobs::{init_jobs};
-use clokwerk::{Scheduler};
+use clokwerk::Scheduler;
+use jobs::init_jobs;
 
 fn main() {
     parse_args();
