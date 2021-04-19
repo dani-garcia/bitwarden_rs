@@ -659,7 +659,7 @@ fn takeover_emergency_access(emer_id: String, headers: Headers, conn: DbConn) ->
     Ok(Json(json!({
       "Kdf": grantor_user.client_kdf_type,
       "KdfIterations": grantor_user.client_kdf_iter,
-      "KeyEncrypted": emergency_access.key_encrypted.unwrap(),
+      "KeyEncrypted": &emergency_access.key_encrypted,
       "Object": "emergencyAccessTakeover",
     })))
 }
