@@ -483,7 +483,7 @@ fn initiate_emergency_access(emer_id: String, headers: Headers, conn: DbConn) ->
         err!("Emergency access not valid.")
     }
 
-    let grantor_user = match User::find_by_uuid(&initiating_user.uuid, &conn) {
+    let grantor_user = match User::find_by_uuid(&emergency_access.grantor_uuid, &conn) {
         Some(user) => user,
         None => err!("Grantor user not found."),
     };

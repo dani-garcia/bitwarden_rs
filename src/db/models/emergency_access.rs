@@ -47,7 +47,7 @@ impl EmergencyAccess {
         if self.atype == EmergencyAccessType::View as i32 {
             "View"
         } else {
-            "Takeovver"
+            "Takeover"
         }
     }
 
