@@ -1,6 +1,8 @@
 use chrono::{NaiveDateTime, Utc};
 use serde_json::Value;
 
+use super::{User};
+
 db_object! {
     #[derive(Debug, Identifiable, Queryable, Insertable, Associations, AsChangeset)]
     #[table_name = "emergency_accesses"]
@@ -155,7 +157,6 @@ pub enum EmergencyAccessStatus {
 use crate::db::DbConn;
 
 use crate::api::EmptyResult;
-use crate::db::models::User;
 use crate::error::MapResult;
 
 impl EmergencyAccess {
@@ -192,6 +193,16 @@ impl EmergencyAccess {
                     .map_res("Error saving emergency access")
             }
         }
+    }
+
+    pub fn delete_all_by_user(user_uuid: &str, conn: &DbConn) -> EmptyResult {
+        for user_org in Self::find_all_by_grantor_uuid(&user_uuid, &conn) {
+            user_org.delete(&conn)?;
+        }
+        for user_org in Self::find_all_by_grantee_uuid(&user_uuid, &conn) {
+            user_org.delete(&conn)?;
+        }
+        Ok(())
     }
 
     pub fn delete(self, conn: &DbConn) -> EmptyResult {

@@ -2,6 +2,7 @@ use chrono::Utc;
 use rocket::Route;
 use rocket_contrib::json::Json;
 use serde_json::Value;
+use std::borrow::Borrow;
 
 use crate::{
     api::{EmptyResult, JsonResult, JsonUpcase, NumberOrString},
@@ -9,7 +10,6 @@ use crate::{
     db::{models::*, DbConn},
     mail, CONFIG,
 };
-use std::borrow::Borrow;
 
 pub fn routes() -> Vec<Route> {
     routes![
