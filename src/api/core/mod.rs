@@ -1,5 +1,6 @@
 mod accounts;
 mod ciphers;
+mod emergency_accesses;
 mod folders;
 mod organizations;
 mod sends;
@@ -18,6 +19,7 @@ pub fn routes() -> Vec<Route> {
     routes.append(&mut folders::routes());
     routes.append(&mut organizations::routes());
     routes.append(&mut two_factor::routes());
+    routes.append(&mut emergency_accesses::routes());
     routes.append(&mut sends::routes());
     routes.append(&mut mod_routes);
 

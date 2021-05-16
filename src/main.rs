@@ -35,12 +35,16 @@ mod config;
 mod crypto;
 #[macro_use]
 mod db;
+mod jobs;
 mod mail;
 mod util;
 
 pub use config::CONFIG;
 pub use error::{Error, MapResult};
 pub use util::is_running_in_docker;
+
+use clokwerk::Scheduler;
+use jobs::init_jobs;
 
 fn main() {
     parse_args();
@@ -58,9 +62,20 @@ fn main() {
 
     create_icon_cache_folder();
 
+    // Create a new scheduler
+    let mut scheduler = Scheduler::new();
+    // init scheduler
+    init_jobs(&mut scheduler);
+    // Or run it in a background thread
+    let jobs = scheduler.watch_thread(Duration::from_millis(5000));
+
     let pool = create_db_pool();
     schedule_jobs(pool.clone());
     launch_rocket(pool, extra_debug); // Blocks until program termination.
+
+    // on exit rocket
+    info!("exit");
+    jobs.stop();
 }
 
 const HELP: &str = "\

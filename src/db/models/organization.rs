@@ -495,6 +495,16 @@ impl UserOrganization {
         }}
     }
 
+    pub fn find_by_user_and_type(user_uuid: &str, atype: i32, conn: &DbConn) -> Vec<Self> {
+        db_run! { conn: {
+            users_organizations::table
+                .filter(users_organizations::user_uuid.eq(user_uuid))
+                .filter(users_organizations::atype.eq(atype))
+                .load::<UserOrganizationDb>(conn)
+                .expect("Error loading user organizations").from_db()
+        }}
+    }
+
     pub fn find_by_org(org_uuid: &str, conn: &DbConn) -> Vec<Self> {
         db_run! { conn: {
             users_organizations::table
